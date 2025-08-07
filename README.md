@@ -8,7 +8,7 @@
 ## ⚠️ Aviso
 
 > - Projeto experimental, pode conter bugs.  
-> - Use por sua conta e risco.
+> - Pode conflitar com outras extensões.
 
 ---
 

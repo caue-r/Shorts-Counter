@@ -1,35 +1,52 @@
 # Shorts Counter
 
-Extensão para Chrome que conta quantos Shorts do YouTube e Reels do Instagram você assistiu no navegador.
+> Extensão para Chrome que **conta quantos Shorts do YouTube e Reels do Instagram você assistiu** no navegador.  
+> Simples, leve e direto para quem quer monitorar o próprio tempo gasto com vídeos curtos.
 
-## Como funciona
+---
 
-- Ao assistir um novo vídeo curto (YouTube Shorts ou Instagram Reels), o contador da extensão é incrementado.
-- O total é exibido em um popup acessível pelo ícone da extensão na barra do Chrome.
-- O contador pode ser zerado a qualquer momento.
+## ⚠️ Aviso
 
-## Instalação
+> - Projeto experimental, pode conter bugs.  
+> - Use por sua conta e risco.
 
-1. Baixe este repositório.
-2. Abra `chrome://extensions/` no Chrome.
-3. Ative o modo desenvolvedor.
-4. Clique em "Carregar sem compactação" e selecione a pasta do projeto.
+---
 
 ## Funcionalidades
 
-- Conta vídeos assistidos em:
-  - YouTube Shorts (`youtube.com/shorts/*`)
-  - Instagram Reels (`instagram.com/reels/*`)
-- Contador persistente, mesmo ao fechar o navegador.
-- Botão para resetar o contador.
+> ✅ Conta automaticamente quantos Shorts (YouTube) e Reels (Instagram) você assistiu.  
+> ✅ Mostra o total em um popup ao clicar no ícone da extensão.  
+> ✅ Permite zerar o contador a qualquer momento.  
+> ✅ Contador permanece salvo mesmo fechando o navegador.
+
+---
+
+## Como instalar
+
+> 1️⃣ Baixe ou clone este repositório.  
+>
+> 2️⃣ Acesse `chrome://extensions/` no Chrome e ative o modo desenvolvedor.  
+>
+> 3️⃣ Clique em **Carregar sem compactação** e selecione a pasta do projeto.
+
+---
+
+## Como usar
+
+> - Basta navegar pelos Shorts do YouTube ou Reels do Instagram normalmente.  
+> - O contador será atualizado automaticamente.  
+> - Clique no ícone da extensão para ver ou resetar a contagem.
+
+---
 
 ## Estrutura dos arquivos
 
-- `background.js` — Gerencia a contagem e armazenamento.
-- `content.js` — Detecta mudança de vídeo nas páginas.
-- `popup.html` — Popup visual da extensão.
-- `popup.js` — Lógica do popup.
-- `manifest.json` — Manifesto da extensão.
+> - `background.js` — Lida com a contagem e armazenamento dos dados.  
+> - `content.js` — Detecta troca de vídeos e envia para o contador.  
+> - `popup.html` + `popup.js` — Interface do popup.  
+> - `manifest.json` — Manifesto da extensão.
+
+---
 
 ## Licença
 

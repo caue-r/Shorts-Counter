@@ -5,7 +5,7 @@ let videosSeen = {};
 
 console.log('[Shorts Counter] Service Worker carregado!');
 
-// Carrega dados do storage ao iniciar
+
 chrome.storage.local.get(['shortCounter', 'videosSeen'], (data) => {
   counter = data.shortCounter || 0;
   videosSeen = data.videosSeen || {};
@@ -21,7 +21,6 @@ chrome.runtime.onMessage.addListener((message) => {
       counter++;  // Agora soma 1 a cada vídeo novo
       console.log(`[Shorts Counter] Novo vídeo registrado: ${message.videoId} (total no lote: ${Object.keys(videosSeen).length}), contador = ${counter}`);
 
-      // Se atingiu o lote, zera só a lista de vídeos
       if (Object.keys(videosSeen).length >= LOTE_SIZE) {
         videosSeen = {};
         chrome.storage.local.set({ shortCounter: counter, videosSeen }, () => {
@@ -29,7 +28,6 @@ chrome.runtime.onMessage.addListener((message) => {
         });
         chrome.action.setBadgeText({ text: counter.toString() });
       } else {
-        // Salva o estado intermediário (contador + vídeos vistos)
         chrome.storage.local.set({ shortCounter: counter, videosSeen }, () => {
           console.log(`[Shorts Counter] Estado intermediário salvo: contador = ${counter}, vídeos no lote = ${Object.keys(videosSeen).length}`);
         });

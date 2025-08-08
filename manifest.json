@@ -18,8 +18,8 @@
     "content_scripts": [
       {
         "matches": [
-          "https://www.youtube.com/shorts/*",
-          "https://www.instagram.com/reels/*"
+          "*://*.youtube.com/*",
+          "*://*.instagram.com/*"
         ],
         "js": ["content.js"],
         "run_at": "document_idle"

@@ -1,92 +1,186 @@
-// === DEBUG LOG ===
-const log = (...args) => console.log("[Shorts Counter]", ...args);
+// === SHORTS COUNTER CONTENT SCRIPT ===
+const DEBUG = false;
+const log = (...args) => DEBUG && console.log("[Shorts Counter]", ...args);
 
-let lastVideoId = null;
+// Verifica se a extensão está ativa antes de inicializar
+if (!chrome.runtime?.id) {
+  log("Extensão não está ativa, content script não será inicializado");
+} else {
+  class ShortsCounter {
+    constructor() {
+      this.lastVideoId = null;
+      this.debounceTimer = null;
+      this.isInitialized = false;
+      this.init();
+    }
 
-// Extrai ID do vídeo
-function getVideoIdFromUrl() {
-  const url = location.href;
+    init() {
+      try {
+        this.setupEventListeners();
+        this.hookHistoryAPI();
+        this.setupMutationObserver();
+        this.isInitialized = true;
+        log("Shorts Counter inicializado em:", location.href);
+        this.maybeCount();
+      } catch (error) {
+        console.error("[Shorts Counter] Erro na inicialização:", error);
+      }
+    }
 
-  // YouTube Shorts
-  let m = url.match(/https?:\/\/(?:www\.)?youtube\.com\/shorts\/([\w-]+)/);
-  if (m) return "yt-" + m[1];
+    // Extrai ID do vídeo da URL atual
+    getVideoIdFromUrl() {
+      try {
+        const url = location.href;
+        
+        // YouTube Shorts
+        const ytMatch = url.match(/https?:\/\/(?:www\.)?youtube\.com\/shorts\/([\w-]+)/);
+        if (ytMatch) return `yt-${ytMatch[1]}`;
 
-  // Instagram Reels
-  m = url.match(/https?:\/\/(?:www\.)?instagram\.com\/reels\/([\w-]+)/);
-  if (m) return "insta-" + m[1];
+        // Instagram Reels
+        const instaMatch = url.match(/https?:\/\/(?:www\.)?instagram\.com\/reels\/([\w-]+)/);
+        if (instaMatch) return `insta-${instaMatch[1]}`;
 
-  return null;
-}
+        return null;
+      } catch (error) {
+        log("Erro ao extrair ID do vídeo:", error);
+        return null;
+      }
+    }
 
-function maybeCount() {
-  const id = getVideoIdFromUrl();
-  if (!id) {
-    log("Sem ID detectado para a URL:", location.href);
-    return;
+    // Conta o vídeo se for novo
+    maybeCount() {
+      try {
+        const videoId = this.getVideoIdFromUrl();
+        if (!videoId) {
+          log("Sem ID detectado para a URL:", location.href);
+          return;
+        }
+
+        if (videoId !== this.lastVideoId) {
+          this.lastVideoId = videoId;
+          log("Novo vídeo detectado:", videoId);
+          this.sendIncrementMessage(videoId);
+        } else {
+          log("Mesmo vídeo, ignorando:", videoId);
+        }
+      } catch (error) {
+        console.error("[Shorts Counter] Erro ao contar vídeo:", error);
+      }
+    }
+
+    // Envia mensagem para o background script
+    sendIncrementMessage(videoId) {
+      try {
+        // Verifica se a extensão ainda está ativa
+        if (!chrome.runtime?.id) {
+          log("Extensão não está mais ativa, ignorando mensagem");
+          return;
+        }
+
+        // Verifica se o runtime está disponível
+        if (typeof chrome.runtime.sendMessage !== 'function') {
+          log("Runtime não está disponível, ignorando mensagem");
+          return;
+        }
+
+        chrome.runtime.sendMessage({ 
+          type: "INCREMENT_COUNTER", 
+          videoId: videoId,
+          timestamp: Date.now()
+        }).then(response => {
+          if (chrome.runtime.lastError) {
+            // Ignora erros de contexto inválido (extensão recarregada)
+            if (chrome.runtime.lastError.message.includes('Extension context invalidated')) {
+              log("Contexto da extensão inválido - extensão pode ter sido recarregada");
+            } else {
+              log("Erro ao enviar mensagem:", chrome.runtime.lastError.message);
+            }
+          } else if (response && response.success) {
+            log("Mensagem enviada com sucesso:", response);
+          }
+        }).catch(error => {
+          // Ignora erros de contexto inválido
+          if (error.message && error.message.includes('Extension context invalidated')) {
+            log("Contexto da extensão inválido - extensão pode ter sido recarregada");
+          } else {
+            log("Erro ao enviar mensagem:", error);
+          }
+        });
+      } catch (error) {
+        // Ignora erros de contexto inválido
+        if (error.message && error.message.includes('Extension context invalidated')) {
+          log("Contexto da extensão inválido - extensão pode ter sido recarregada");
+        } else {
+          console.error("[Shorts Counter] Erro ao enviar mensagem:", error);
+        }
+      }
+    }
+
+    // Debounce para evitar múltiplas contagens
+    debouncedMaybeCount(delay = 150) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => this.maybeCount(), delay);
+    }
+
+    // Configura listeners de eventos
+    setupEventListeners() {
+      // YouTube specific events
+      window.addEventListener("yt-navigate-finish", () => {
+        log("yt-navigate-finish");
+        this.debouncedMaybeCount();
+      });
+
+      window.addEventListener("yt-navigate-start", () => {
+        log("yt-navigate-start");
+      });
+
+      // Location change events
+      window.addEventListener("locationchange", () => {
+        log("locationchange");
+        this.debouncedMaybeCount();
+      });
+    }
+
+    // Hook na API de histórico para detectar mudanças de URL
+    hookHistoryAPI() {
+      const { pushState, replaceState } = history;
+
+      history.pushState = (...args) => {
+        const result = pushState.apply(history, args);
+        window.dispatchEvent(new Event("locationchange"));
+        return result;
+      };
+
+      history.replaceState = (...args) => {
+        const result = replaceState.apply(history, args);
+        window.dispatchEvent(new Event("locationchange"));
+        return result;
+      };
+
+      window.addEventListener("popstate", () => {
+        window.dispatchEvent(new Event("locationchange"));
+      });
+    }
+
+    // Observer para mudanças no DOM
+    setupMutationObserver() {
+      const observer = new MutationObserver(() => {
+        if (/\/shorts\/|\/reels\//.test(location.pathname)) {
+          this.debouncedMaybeCount(200);
+        }
+      });
+
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
-  if (id !== lastVideoId) {
-    lastVideoId = id;
-    log("Novo vídeo detectado:", id);
-    chrome.runtime.sendMessage({ type: "INCREMENT_COUNTER", videoId: id });
+
+  // Inicializa o contador quando o DOM estiver pronto
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new ShortsCounter());
   } else {
-    log("Mesmo vídeo, ignorando:", id);
+    new ShortsCounter();
   }
 }
-
-// --- Debounce util ---
-let debounceTimer = null;
-function debouncedMaybeCount(delay = 150) {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(maybeCount, delay);
-}
-
-
-(function hookHistoryAPI() {
-  const { pushState, replaceState } = history;
-
-  history.pushState = function () {
-    const ret = pushState.apply(this, arguments);
-    window.dispatchEvent(new Event("locationchange"));
-    return ret;
-  };
-
-  history.replaceState = function () {
-    const ret = replaceState.apply(this, arguments);
-    window.dispatchEvent(new Event("locationchange"));
-    return ret;
-  };
-
-  window.addEventListener("popstate", () => {
-    window.dispatchEvent(new Event("locationchange"));
-  });
-
-  window.addEventListener("locationchange", () => {
-    log("locationchange");
-    debouncedMaybeCount();
-  });
-})();
-
-window.addEventListener("yt-navigate-finish", () => {
-  log("yt-navigate-finish");
-  debouncedMaybeCount();
-});
-window.addEventListener("yt-navigate-start", () => {
-  log("yt-navigate-start");
-});
-
-const mo = new MutationObserver(() => {
-  if (/\/shorts\/|\/reels\//.test(location.pathname)) {
-    debouncedMaybeCount(200);
-  }
-});
-mo.observe(document.documentElement, {
-  childList: true,
-  subtree: true,
-});
-
-setInterval(() => {
-  if (/\/shorts\/|\/reels\//.test(location.pathname)) maybeCount();
-}, 2000);
-
-log("content.js injetado em:", location.href);
-maybeCount();

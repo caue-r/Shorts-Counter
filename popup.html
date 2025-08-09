@@ -1,66 +1,177 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contador de Shorts & Reels</title>
   <style>
-    body {
-      min-width: 220px;
-      font-family: Arial, sans-serif;
-      padding: 20px 16px;
-      background: #181818;
-      color: #fff;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+    body {
+      min-width: 280px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 24px 20px;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      color: #ffffff;
+      line-height: 1.5;
+    }
+
+    .container {
+      text-align: center;
+    }
+
     h1 {
-      font-size: 18px;
-      margin-bottom: 16px;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
       color: #00e676;
       text-align: center;
+      letter-spacing: -0.5px;
     }
-    .counter {
-      font-size: 42px;
-      font-weight: bold;
+
+    .counter-container {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 24px 16px;
       margin: 20px 0;
-      text-align: center;
-      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
     }
+
+    .counter {
+      font-size: 48px;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .counter-label {
+      font-size: 14px;
+      color: #b0b0b0;
+      margin-top: 8px;
+      font-weight: 400;
+    }
+
     button {
       display: block;
-      margin: 12px auto 0;
-      padding: 6px 18px;
-      background: #00e676;
-      color: #222;
+      width: 100%;
+      margin: 16px auto 0;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #00e676 0%, #00b150 100%);
+      color: #1a1a1a;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3);
     }
-    button:hover {
-      background: #00b150;
+
+    button:hover:not(:disabled) {
+      background: linear-gradient(135deg, #00b150 0%, #008f3f 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 230, 118, 0.4);
     }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 230, 118, 0.3);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .footer {
-      font-size: 11px;
-      color: #bbb;
-      margin-top: 12px;
+      font-size: 12px;
+      color: #888;
+      margin-top: 20px;
       text-align: center;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
+
     .footer a {
       color: #00e676;
       text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
     }
+
     .footer a:hover {
+      color: #00b150;
       text-decoration: underline;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin: 16px 0;
+      font-size: 12px;
+      color: #b0b0b0;
+    }
+
+    .stat-item {
+      flex: 1;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #00e676;
+      display: block;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+        color: #333;
+      }
+
+      .counter-container {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .counter {
+        color: #333;
+      }
+
+      .counter-label {
+        color: #666;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Shorts & Reels Vistos</h1>
-  <div class="counter" id="counter">...</div>
-  <button id="reset">Resetar contador</button>
-  <div class="footer">
-    <a href="https://github.com/caue-r" target="_blank">github.com/caue-r</a>
+  <div class="container">
+    <h1>Shorts & Reels Vistos</h1>
+    
+    <div class="counter-container">
+      <div class="counter" id="counter" role="status" aria-live="polite">...</div>
+      <div class="counter-label">vídeos assistidos</div>
+    </div>
+
+    <button id="reset" type="button" aria-label="Resetar contador de shorts e reels">
+      Resetar contador
+    </button>
+
+    <div class="footer">
+      <a href="https://github.com/caue-r" target="_blank" rel="noopener noreferrer">
+        github.com/caue-r
+      </a>
+    </div>
   </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

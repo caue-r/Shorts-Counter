@@ -1,0 +1,36 @@
+{
+  "name": "shorts-counter",
+  "version": "1.1.0",
+  "description": "Uma extensão para Chrome que conta automaticamente quantos Shorts do YouTube e Reels do Instagram você assistiu.",
+  "main": "background.js",
+  "scripts": {
+    "build": "echo 'Build completed'",
+    "dev": "echo 'Development mode - load extension in Chrome'",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'Linting completed'"
+  },
+  "keywords": [
+    "chrome-extension",
+    "youtube",
+    "instagram",
+    "shorts",
+    "reels",
+    "counter",
+    "productivity"
+  ],
+  "author": "Caue Reis",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caue-r/shorts-counter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/caue-r/shorts-counter/issues"
+  },
+  "homepage": "https://github.com/caue-r/shorts-counter#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+} 

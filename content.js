@@ -2,8 +2,17 @@
 const DEBUG = false;
 const log = (...args) => DEBUG && console.log("[Shorts Counter]", ...args);
 
+// Função para verificar se a extensão está ativa
+const isExtensionActive = () => {
+  try {
+    return chrome.runtime?.id && typeof chrome.runtime.sendMessage === 'function';
+  } catch {
+    return false;
+  }
+};
+
 // Verifica se a extensão está ativa antes de inicializar
-if (!chrome.runtime?.id) {
+if (!isExtensionActive()) {
   log("Extensão não está ativa, content script não será inicializado");
 } else {
   class ShortsCounter {
@@ -72,38 +81,27 @@ if (!chrome.runtime?.id) {
     sendIncrementMessage(videoId) {
       try {
         // Verifica se a extensão ainda está ativa
-        if (!chrome.runtime?.id) {
+        if (!isExtensionActive()) {
           log("Extensão não está mais ativa, ignorando mensagem");
           return;
         }
 
-        // Verifica se o runtime está disponível
-        if (typeof chrome.runtime.sendMessage !== 'function') {
-          log("Runtime não está disponível, ignorando mensagem");
-          return;
-        }
-
+        // Envia a mensagem usando callback para melhor controle de erros
         chrome.runtime.sendMessage({ 
           type: "INCREMENT_COUNTER", 
           videoId: videoId,
           timestamp: Date.now()
-        }).then(response => {
+        }, (response) => {
+          // Verifica se houve erro durante o envio
           if (chrome.runtime.lastError) {
-            // Ignora erros de contexto inválido (extensão recarregada)
-            if (chrome.runtime.lastError.message.includes('Extension context invalidated')) {
+            const errorMessage = chrome.runtime.lastError.message || '';
+            if (errorMessage.includes('Extension context invalidated')) {
               log("Contexto da extensão inválido - extensão pode ter sido recarregada");
             } else {
-              log("Erro ao enviar mensagem:", chrome.runtime.lastError.message);
+              log("Erro ao enviar mensagem:", errorMessage);
             }
           } else if (response && response.success) {
             log("Mensagem enviada com sucesso:", response);
-          }
-        }).catch(error => {
-          // Ignora erros de contexto inválido
-          if (error.message && error.message.includes('Extension context invalidated')) {
-            log("Contexto da extensão inválido - extensão pode ter sido recarregada");
-          } else {
-            log("Erro ao enviar mensagem:", error);
           }
         });
       } catch (error) {

@@ -1,53 +1,53 @@
 # Shorts Counter
 
-> Extensão para Chrome que **conta quantos Shorts do YouTube e Reels do Instagram você assistiu** no navegador.  
-> Simples, leve e direto para quem quer monitorar o próprio tempo gasto com vídeos curtos.
+> Chrome extension that **counts how many YouTube Shorts and Instagram Reels you have watched** in the browser.  
+> Simple, lightweight, and straightforward for those who want to monitor their own time spent on short videos.
 
 ---
 
-## ⚠️ Aviso
+## ⚠️ Warning
 
-> - Projeto experimental, pode conter bugs.  
-> - Pode conflitar com outras extensões.
-
----
-
-## Funcionalidades
-
-> ✅ Conta automaticamente quantos Shorts (YouTube) e Reels (Instagram) você assistiu.  
-> ✅ Mostra o total em um popup ao clicar no ícone da extensão.  
-> ✅ Permite zerar o contador a qualquer momento.  
-> ✅ Contador permanece salvo mesmo fechando o navegador.
+> - Experimental project, may contain bugs.  
+> - May conflict with other extensions.
 
 ---
 
-## Como instalar
+## Features
 
-> 1️⃣ Baixe ou clone este repositório.  
+> ✅ Automatically counts how many Shorts (YouTube) and Reels (Instagram) you have watched.  
+> ✅ Displays the total in a popup when clicking the extension icon.  
+> ✅ Allows resetting the counter at any time.  
+> ✅ Counter remains saved even after closing the browser.
+
+---
+
+## How to Install
+
+> 1️⃣ Download or clone this repository.  
 >
-> 2️⃣ Acesse `chrome://extensions/` no Chrome e ative o modo desenvolvedor.  
+> 2️⃣ Go to `chrome://extensions/` in Chrome and enable developer mode.  
 >
-> 3️⃣ Clique em **Carregar sem compactação** e selecione a pasta do projeto.
+> 3️⃣ Click **Load unpacked** and select the project folder.
 
 ---
 
-## Como usar
+## How to Use
 
-> - Basta navegar pelos Shorts do YouTube ou Reels do Instagram normalmente.  
-> - O contador será atualizado automaticamente.  
-> - Clique no ícone da extensão para ver ou resetar a contagem.
-
----
-
-## Estrutura dos arquivos
-
-> - `background.js` — Lida com a contagem e armazenamento dos dados.  
-> - `content.js` — Detecta troca de vídeos e envia para o contador.  
-> - `popup.html` + `popup.js` — Interface do popup.  
-> - `manifest.json` — Manifesto da extensão.
+> - Just browse through YouTube Shorts or Instagram Reels normally.  
+> - The counter will be updated automatically.  
+> - Click the extension icon to view or reset the count.
 
 ---
 
-## Licença
+## File Structure
 
-> Este projeto é experimental e sem garantia, sendo disponibilizado sob a [licença MIT](https://github.com/caue-r/Shorts-Counter/blob/main/LICENSE).
+> - `background.js` — Handles counting and data storage.  
+> - `content.js` — Detects video changes and sends them to the counter.  
+> - `popup.html` + `popup.js` — Popup interface.  
+> - `manifest.json` — Extension manifest.
+
+---
+
+## License
+
+> This project is experimental and without warranty, and is available under the [MIT license](https://github.com/caue-r/Shorts-Counter/blob/main/LICENSE).  
